@@ -1,0 +1,24 @@
+---
+# MongoDB version and package information
+mongodb_version: "8.0.9"
+mongodb_repo: "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/8.0 multiverse"
+mongodb_gpg_key: "https://pgp.mongodb.com/server-8.0.asc"
+mongodb_repo_file: "mongodb-org-8.0"
+
+# MongoDB packages to install
+mongodb_packages:
+  - "mongodb-org={{ mongodb_version }}"
+  - "mongodb-org-database={{ mongodb_version }}"
+  - "mongodb-org-server={{ mongodb_version }}"
+  - "mongodb-org-mongos={{ mongodb_version }}"
+  - "mongodb-org-tools={{ mongodb_version }}"
+
+# MongoDB service configuration
+mongodb_service_name: "mongod"
+mongodb_port: 27017
+mongodb_bind_ip: "127.0.0.1"
+
+# MongoDB directories
+mongodb_data_dir: "/var/lib/mongodb"
+mongodb_log_dir: "/var/log/mongodb"
+mongodb_config_file: "/etc/mongod.conf"

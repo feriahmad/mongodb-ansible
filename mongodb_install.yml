@@ -1,0 +1,85 @@
+---
+- name: Install MongoDB 8.0.9 on Ubuntu 20.04
+  hosts: mongodb
+  become: yes
+  vars_files:
+    - vars/mongodb_vars.yml
+  tasks:
+    - name: Add MongoDB GPG key
+      apt_key:
+        url: "{{ mongodb_gpg_key }}"
+        state: present
+
+    - name: Add MongoDB repository
+      apt_repository:
+        repo: "{{ mongodb_repo }}"
+        state: present
+        filename: "{{ mongodb_repo_file }}"
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        
+    - name: Ensure MongoDB data and log directories exist
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: mongodb
+        group: mongodb
+        mode: '0755'
+      loop:
+        - "{{ mongodb_data_dir }}"
+        - "{{ mongodb_log_dir }}"
+
+    - name: Install MongoDB packages
+      apt:
+        name: "{{ mongodb_packages }}"
+        state: present
+      register: mongodb_install
+
+    - name: Pin the version of MongoDB
+      dpkg_selections:
+        name: "{{ item }}"
+        selection: hold
+      loop:
+        - mongodb-org
+        - mongodb-org-database
+        - mongodb-org-server
+        - mongodb-org-mongos
+        - mongodb-org-tools
+
+    - name: Configure MongoDB
+      template:
+        src: templates/mongod.conf.j2
+        dest: "{{ mongodb_config_file }}"
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Restart MongoDB
+
+    - name: Enable MongoDB service
+      systemd:
+        name: "{{ mongodb_service_name }}"
+        enabled: yes
+        state: started
+
+    - name: Wait for MongoDB to start
+      wait_for:
+        port: "{{ mongodb_port }}"
+        delay: 10
+        timeout: 30
+
+    - name: Verify MongoDB version
+      command: mongod --version
+      register: mongodb_version
+      changed_when: false
+
+    - name: Display MongoDB version
+      debug:
+        var: mongodb_version.stdout_lines
+        
+  handlers:
+    - name: Restart MongoDB
+      systemd:
+        name: "{{ mongodb_service_name }}"
+        state: restarted

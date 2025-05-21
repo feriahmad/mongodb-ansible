@@ -7,8 +7,6 @@
 # Temporary files
 *.tmp
 *.temp
-mongodb_*.yml
-
 # Log files
 *.log
 
