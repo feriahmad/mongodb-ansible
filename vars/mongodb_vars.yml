@@ -16,7 +16,7 @@ mongodb_packages:
 # MongoDB service configuration
 mongodb_service_name: "mongod"
 mongodb_port: 27017
-mongodb_bind_ip: "127.0.0.1"
+mongodb_bind_ip: "0.0.0.0"  # Allow connections from any IP address
 
 # MongoDB directories
 mongodb_data_dir: "/var/lib/mongodb"
