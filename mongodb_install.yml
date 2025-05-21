@@ -19,6 +19,12 @@
     - name: Update apt cache
       apt:
         update_cache: yes
+
+    - name: Install MongoDB packages
+      apt:
+        name: "{{ mongodb_packages }}"
+        state: present
+      register: mongodb_install
         
     - name: Ensure MongoDB data and log directories exist
       file:
@@ -30,12 +36,6 @@
       loop:
         - "{{ mongodb_data_dir }}"
         - "{{ mongodb_log_dir }}"
-
-    - name: Install MongoDB packages
-      apt:
-        name: "{{ mongodb_packages }}"
-        state: present
-      register: mongodb_install
 
     - name: Pin the version of MongoDB
       dpkg_selections:

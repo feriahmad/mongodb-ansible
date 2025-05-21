@@ -107,6 +107,17 @@ cat > mongodb_secure.yml << EOF
     enable_tls: ${ENABLE_TLS}
     bind_ip: "${BIND_IP}"
   tasks:
+    - name: Check if MongoDB is installed
+      command: which mongod
+      register: mongod_installed
+      changed_when: false
+      ignore_errors: yes
+      
+    - name: Fail if MongoDB is not installed
+      fail:
+        msg: "MongoDB is not installed. Please install MongoDB first using the install_mongodb.sh script."
+      when: mongod_installed.rc != 0
+
     - name: Stop MongoDB service
       systemd:
         name: "{{ mongodb_service_name }}"

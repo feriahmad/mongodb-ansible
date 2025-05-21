@@ -49,12 +49,14 @@ To customize the MongoDB installation, modify the variables in `vars/mongodb_var
 1. Adds the MongoDB GPG key
 2. Adds the MongoDB 8.0 repository
 3. Updates apt cache
-4. Creates necessary directories for MongoDB data and logs
-5. Installs MongoDB 8.0.9 packages
+4. Installs MongoDB 8.0.9 packages
+5. Creates necessary directories for MongoDB data and logs
 6. Pins the MongoDB version to prevent accidental upgrades
 7. Configures MongoDB using the template
 8. Enables and starts the MongoDB service
 9. Verifies the MongoDB installation by checking the version
+
+> **Note**: The order of tasks is important. The MongoDB packages must be installed before creating the data and log directories with the mongodb user as owner, since the mongodb user is created during package installation.
 
 ## Verification
 
