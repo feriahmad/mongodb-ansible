@@ -136,8 +136,24 @@ cat > mongodb_secure.yml << EOF
         mongodb_bind_ip: "{{ bind_ip }}"
         mongodb_tls_enabled: "{{ enable_tls }}"
 
+    - name: Create custom systemd service file for temporary instance
+      template:
+        src: templates/mongod.service.j2
+        dest: /lib/systemd/system/mongod.service
+        owner: root
+        group: root
+        mode: '0644'
+      register: service_file_updated
+
+    - name: Reload systemd if service file was updated
+      systemd:
+        daemon_reload: yes
+      when: service_file_updated.changed
+
     - name: Start MongoDB service without authentication for initial setup
-      shell: mongod --dbpath {{ mongodb_data_dir }} --port {{ mongodb_port }} --fork --logpath {{ mongodb_log_dir }}/mongod.log
+      systemd:
+        name: "{{ mongodb_service_name }}"
+        state: started
       when: enable_auth
       ignore_errors: yes
 

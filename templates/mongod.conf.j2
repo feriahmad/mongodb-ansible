@@ -30,7 +30,9 @@ net:
 # how the process runs
 processManagement:
   timeZoneInfo: /usr/share/zoneinfo
-  fork: true
+  # When running under systemd, fork should be false
+  fork: false
+  pidFilePath: /var/run/mongodb/mongod.pid
 
 # security settings
 security:

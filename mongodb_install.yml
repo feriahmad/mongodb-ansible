@@ -26,7 +26,7 @@
         state: present
       register: mongodb_install
         
-    - name: Ensure MongoDB data and log directories exist
+    - name: Ensure MongoDB data, log, and PID directories exist
       file:
         path: "{{ item }}"
         state: directory
@@ -36,6 +36,7 @@
       loop:
         - "{{ mongodb_data_dir }}"
         - "{{ mongodb_log_dir }}"
+        - "/var/run/mongodb"
 
     - name: Pin the version of MongoDB
       dpkg_selections:
@@ -57,17 +58,66 @@
         mode: '0644'
       notify: Restart MongoDB
 
+    - name: Install custom systemd service file
+      template:
+        src: templates/mongod.service.j2
+        dest: /lib/systemd/system/mongod.service
+        owner: root
+        group: root
+        mode: '0644'
+      register: service_file_updated
+
+    - name: Reload systemd if service file was updated
+      systemd:
+        daemon_reload: yes
+      when: service_file_updated.changed
+
+    - name: Check if MongoDB service exists
+      stat:
+        path: /lib/systemd/system/mongod.service
+      register: mongod_service_file
+
+    - name: Display MongoDB service file status
+      debug:
+        var: mongod_service_file
+
     - name: Enable MongoDB service
       systemd:
         name: "{{ mongodb_service_name }}"
         enabled: yes
         state: started
+        daemon_reload: yes
+      register: mongodb_service_start
+
+    - name: Display MongoDB service start result
+      debug:
+        var: mongodb_service_start
+
+    - name: Check MongoDB service status
+      command: systemctl status {{ mongodb_service_name }}
+      register: mongodb_status
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Display MongoDB service status
+      debug:
+        var: mongodb_status.stdout_lines
+
+    - name: Check if MongoDB is listening on port
+      command: ss -tulpn | grep {{ mongodb_port }}
+      register: port_check
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Display port check result
+      debug:
+        var: port_check.stdout_lines
 
     - name: Wait for MongoDB to start
       wait_for:
         port: "{{ mongodb_port }}"
         delay: 10
-        timeout: 30
+        timeout: 60
 
     - name: Verify MongoDB version
       command: mongod --version

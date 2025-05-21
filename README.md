@@ -57,6 +57,8 @@ To customize the MongoDB installation, modify the variables in `vars/mongodb_var
 9. Verifies the MongoDB installation by checking the version
 
 > **Note**: The order of tasks is important. The MongoDB packages must be installed before creating the data and log directories with the mongodb user as owner, since the mongodb user is created during package installation.
+>
+> **Important**: This playbook includes a custom systemd service file for MongoDB to ensure proper startup. The configuration also sets `fork: false` in the MongoDB configuration file, which is required for proper operation with systemd.
 
 ## Verification
 
