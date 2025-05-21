@@ -104,10 +104,9 @@
         var: mongodb_status.stdout_lines
 
     - name: Check if MongoDB is listening on port
-      command: ss -tulpn | grep {{ mongodb_port }}
+      shell: "ss -tulpn | grep {{ mongodb_port }} || true"
       register: port_check
       changed_when: false
-      ignore_errors: yes
 
     - name: Display port check result
       debug:
