@@ -1,0 +1,37 @@
+# mongod.conf
+
+# for documentation of all options, see:
+#   http://docs.mongodb.org/manual/reference/configuration-options/
+
+# Where and how to store data.
+storage:
+  dbPath: {{ mongodb_data_dir }}
+  journal:
+    enabled: true
+
+# where to write logging data.
+systemLog:
+  destination: file
+  logAppend: true
+  path: {{ mongodb_log_dir }}/mongod.log
+
+# network interfaces
+net:
+  port: {{ mongodb_port }}
+  bindIp: {{ mongodb_bind_ip | default('127.0.0.1') }}
+{% if mongodb_tls_enabled | default(false) %}
+  tls:
+    mode: requireTLS
+    certificateKeyFile: {{ mongodb_data_dir }}/mongodb.pem
+    CAFile: {{ mongodb_data_dir }}/ca.pem
+    allowConnectionsWithoutCertificates: true
+{% endif %}
+
+# how the process runs
+processManagement:
+  timeZoneInfo: /usr/share/zoneinfo
+  fork: true
+
+# security settings
+security:
+  authorization: {{ 'enabled' if mongodb_security_auth | default(false) else 'disabled' }}

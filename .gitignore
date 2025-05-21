@@ -1,0 +1,17 @@
+# Environment variables
+.env
+
+# Backup files
+/mongodb_backups/
+
+# Temporary files
+*.tmp
+*.temp
+mongodb_*.yml
+
+# Log files
+*.log
+
+# OS specific files
+.DS_Store
+Thumbs.db
