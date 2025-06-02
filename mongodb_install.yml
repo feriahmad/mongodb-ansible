@@ -26,7 +26,7 @@
         state: present
       register: mongodb_install
         
-    - name: Ensure MongoDB data, log, and PID directories exist
+    - name: Ensure MongoDB data and log directories exist
       file:
         path: "{{ item }}"
         state: directory
@@ -36,7 +36,6 @@
       loop:
         - "{{ mongodb_data_dir }}"
         - "{{ mongodb_log_dir }}"
-        - "/var/run/mongodb"
 
     - name: Pin the version of MongoDB
       dpkg_selections:

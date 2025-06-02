@@ -9,9 +9,8 @@ User=mongodb
 Group=mongodb
 EnvironmentFile=-/etc/default/mongod
 ExecStart=/usr/bin/mongod --config {{ mongodb_config_file }}
-ExecStartPre=/usr/bin/mkdir -p /var/run/mongodb
-ExecStartPre=/usr/bin/chown mongodb:mongodb /var/run/mongodb
-ExecStartPre=/usr/bin/chmod 0755 /var/run/mongodb
+# Create runtime directory with root permissions before switching to mongodb user
+ExecStartPre=/bin/bash -c "/usr/bin/mkdir -p /var/run/mongodb && /usr/bin/chown mongodb:mongodb /var/run/mongodb && /usr/bin/chmod 0755 /var/run/mongodb"
 PIDFile=/var/run/mongodb/mongod.pid
 Type=simple
 # file size
