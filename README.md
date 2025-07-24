@@ -1,6 +1,6 @@
-# MongoDB 5.0.13 Installation Ansible Playbook
+# MongoDB 5.0.3 Installation Ansible Playbook
 
-This Ansible playbook automates the installation of MongoDB 5.0.13 on Ubuntu 24.04, using the Ubuntu 22.04 (Jammy Jellyfish) repository for compatibility.
+This Ansible playbook automates the installation of MongoDB 5.0.3 on Ubuntu 24.04, using the Ubuntu 22.04 (Jammy Jellyfish) repository for compatibility.
 
 ## Prerequisites
 
@@ -11,7 +11,7 @@ This Ansible playbook automates the installation of MongoDB 5.0.13 on Ubuntu 24.
 ## Project Structure
 
 - `inventory.ini`: Contains the target hosts (localhost in this case)
-- `mongodb_install.yml`: The main playbook that installs MongoDB 5.0.13
+- `mongodb_install.yml`: The main playbook that installs MongoDB 5.0.3
 - `mongodb_test.yml`: A playbook to test the MongoDB installation
 - `vars/mongodb_vars.yml`: Contains configurable variables for MongoDB installation
 - `templates/mongod.conf.j2`: Template for MongoDB configuration file
@@ -49,12 +49,13 @@ To customize the MongoDB installation, modify the variables in `vars/mongodb_var
 1. Adds the MongoDB GPG key
 2. Adds the MongoDB 5.0 repository
 3. Updates apt cache
-4. Installs MongoDB 5.0.13 packages
-5. Creates necessary directories for MongoDB data and logs
-6. Pins the MongoDB version to prevent accidental upgrades
-7. Configures MongoDB using the template
-8. Enables and starts the MongoDB service
-9. Verifies the MongoDB installation by checking the version
+4. Installs libssl1.1 dependency (required for MongoDB 5.0.x on Ubuntu 24.04)
+5. Installs MongoDB 5.0.3 packages
+6. Creates necessary directories for MongoDB data and logs
+7. Pins the MongoDB version to prevent accidental upgrades
+8. Configures MongoDB using the template
+9. Enables and starts the MongoDB service
+10. Verifies the MongoDB installation by checking the version
 
 > **Note**: The order of tasks is important. The MongoDB packages must be installed before creating the data and log directories with the mongodb user as owner, since the mongodb user is created during package installation.
 >
@@ -131,7 +132,7 @@ The test playbook will:
 
 Basic configuration parameters can be modified in the `vars/mongodb_vars.yml` file:
 
-- MongoDB version: 5.0.13
+- MongoDB version: 5.0.3
 - MongoDB port: 27017
 - Bind IP: 127.0.0.1 (localhost only)
 - Data directory: /var/lib/mongodb
@@ -232,7 +233,7 @@ This script will:
 4. Run the installation playbook with the new version
 5. Automatically revert changes if the update fails
 
-The script handles both minor version updates (e.g., 5.0.13 to 5.0.14) and major version updates (e.g., 5.0.13 to 6.0.0) by updating the repository information as needed.
+The script handles both minor version updates (e.g., 5.0.3 to 5.0.4) and major version updates (e.g., 5.0.3 to 6.0.0) by updating the repository information as needed.
 
 ## Uninstallation
 
@@ -377,7 +378,7 @@ This project includes several utility scripts to help you manage your MongoDB in
 
 | Script | Description | Usage |
 |--------|-------------|-------|
-| `install_mongodb.sh` | Installs MongoDB 5.0.13 | `./install_mongodb.sh` |
+| `install_mongodb.sh` | Installs MongoDB 5.0.3 | `./install_mongodb.sh` |
 | `mongodb_status.sh` | Checks the status of MongoDB | `./mongodb_status.sh` |
 | `test_mongodb.sh` | Tests the MongoDB installation | `./test_mongodb.sh` |
 | `backup_mongodb.sh` | Creates a backup of MongoDB databases | `./backup_mongodb.sh [options]` |
