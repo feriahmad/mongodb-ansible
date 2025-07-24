@@ -3,7 +3,7 @@
   hosts: mongodb
   become: yes
   vars:
-    backup_path: "/tmp/mongodb_backups/20250724_142305"
+    backup_path: "/tmp/mongodb_backups/20250724_073209"
     specific_db: "all"
   tasks:
     - name: Create backup directory
@@ -44,6 +44,6 @@
       copy:
         dest: "{{ backup_path }}/backup_info.txt"
         content: |
-          Backup created: Thu Jul 24 14:23:05 WIB 2025
-          MongoDB version: 
+          Backup created: Thu Jul 24 07:32:09 AM UTC 2025
+          MongoDB version: db version v5.0.3
           Databases: {{ databases | join(', ') }}

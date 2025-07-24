@@ -14,7 +14,8 @@ echo "====================================================="
 echo "MongoDB Backup Script"
 echo "====================================================="
 
-source extract_yaml_vars.sh vars/mongodb_vars.yml
+# Load MongoDB variables
+source <(grep -v '^#' vars/mongodb_vars.yml | sed 's/: /=/' | sed 's/"//g')
 
 # Set default backup directory
 BACKUP_DIR="${MONGODB_BACKUP_DIR:-/tmp/mongodb_backups}"
