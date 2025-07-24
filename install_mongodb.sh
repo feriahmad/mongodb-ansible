@@ -8,7 +8,7 @@ set -e
 
 # Display banner
 echo "====================================================="
-echo "MongoDB 5.0.13 Installation Script for Ubuntu 20.04"
+echo "MongoDB 5.0.13 Installation Script for Ubuntu 24.04"
 echo "====================================================="
 
 # Check if Ansible is installed

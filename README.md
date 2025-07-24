@@ -1,10 +1,10 @@
 # MongoDB 5.0.13 Installation Ansible Playbook
 
-This Ansible playbook automates the installation of MongoDB 5.0.13 on Ubuntu 20.04.
+This Ansible playbook automates the installation of MongoDB 5.0.13 on Ubuntu 24.04.
 
 ## Prerequisites
 
-- Ubuntu 20.04 target system
+- Ubuntu 24.04 target system
 - Ansible installed on the control machine
 - Sudo privileges on the target system
 
@@ -388,4 +388,4 @@ This project includes several utility scripts to help you manage your MongoDB in
 | `manage_users.sh` | Creates, deletes, and lists MongoDB users | `./manage_users.sh --action [options]` |
 | `monitor_mongodb.sh` | Monitors MongoDB performance metrics | `./monitor_mongodb.sh [options]` |
 
-All scripts are designed to work together and provide a complete solution for managing MongoDB on Ubuntu 20.04.
+All scripts are designed to work together and provide a complete solution for managing MongoDB on Ubuntu 24.04.
