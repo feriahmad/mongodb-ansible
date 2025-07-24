@@ -77,7 +77,7 @@ cat > mongodb_backup.yml << EOF
         mode: '0755'
 
     - name: Get list of databases
-      shell: mongosh --authenticationDatabase admin -u {{ lookup('env', 'MONGODB_ADMIN_USER') }} -p {{ lookup('env', 'MONGODB_ADMIN_PASS') }} --quiet --eval "db.adminCommand('listDatabases').databases.map(function(d) { return d.name })"
+      shell: mongosh --authenticationDatabase admin -u {{ mongodb_admin_user }} -p {{ mongodb_admin_pass }} --quiet --eval "db.adminCommand('listDatabases').databases.map(function(d) { return d.name })"
       register: db_list
       changed_when: false
       when: specific_db == "all"
@@ -93,7 +93,7 @@ cat > mongodb_backup.yml << EOF
       when: specific_db != "all"
 
     - name: Backup databases
-      shell: mongodump --authenticationDatabase admin -u {{ lookup('env', 'MONGODB_ADMIN_USER') }} -p {{ lookup('env', 'MONGODB_ADMIN_PASS') }} --db={{ item }} --out={{ backup_path }} --gzip
+      shell: mongodump --authenticationDatabase admin -u {{ mongodb_admin_user }} -p {{ mongodb_admin_pass }} --db={{ item }} --out={{ backup_path }} --gzip
       loop: "{{ databases }}"
       when: item != "admin" and item != "config" and item != "local"
       register: backup_result
@@ -115,7 +115,7 @@ EOF
 
 # Run the backup playbook
 echo "Starting MongoDB backup..."
-ansible-playbook -i inventory.ini mongodb_backup.yml
+ansible-playbook -i inventory.ini mongodb_backup.yml --extra-vars "mongodb_admin_user=${ADMIN_USER} mongodb_admin_pass=${ADMIN_PASS}"
 
 # Check if backup was successful
 if [ $? -eq 0 ]; then

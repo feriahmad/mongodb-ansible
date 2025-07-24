@@ -57,21 +57,21 @@ cat > mongodb_status.yml << EOF
       when: mongodb_is_installed
 
     - name: Get MongoDB server status
-      shell: mongosh --authenticationDatabase admin -u {{ lookup('env', 'MONGODB_ADMIN_USER') }} -p {{ lookup('env', 'MONGODB_ADMIN_PASS') }} --quiet --eval "db.serverStatus()"
+      shell: mongosh --authenticationDatabase admin -u {{ mongodb_admin_user }} -p {{ mongodb_admin_pass }} --quiet --eval "db.serverStatus()"
       register: server_status
       changed_when: false
       ignore_errors: yes
       when: mongodb_is_installed and mongodb_is_running
 
     - name: Get MongoDB database list
-      shell: mongosh --authenticationDatabase admin -u {{ lookup('env', 'MONGODB_ADMIN_USER') }} -p {{ lookup('env', 'MONGODB_ADMIN_PASS') }} --quiet --eval "db.adminCommand('listDatabases')"
+      shell: mongosh --authenticationDatabase admin -u {{ mongodb_admin_user }} -p {{ mongodb_admin_pass }} --quiet --eval "db.adminCommand('listDatabases')"
       register: db_list
       changed_when: false
       ignore_errors: yes
       when: mongodb_is_installed and mongodb_is_running
 
     - name: Get MongoDB connection info
-      shell: mongosh --authenticationDatabase admin -u {{ lookup('env', 'MONGODB_ADMIN_USER') }} -p {{ lookup('env', 'MONGODB_ADMIN_PASS') }} --quiet --eval "db.runCommand({connectionStatus: 1})"
+      shell: mongosh --authenticationDatabase admin -u {{ mongodb_admin_user }} -p {{ mongodb_admin_pass }} --quiet --eval "db.runCommand({connectionStatus: 1})"
       register: connection_info
       changed_when: false
       ignore_errors: yes
@@ -123,7 +123,7 @@ EOF
 
 # Run the status check playbook
 echo "Checking MongoDB status..."
-ansible-playbook -i inventory.ini mongodb_status.yml
+ansible-playbook -i inventory.ini mongodb_status.yml --extra-vars "mongodb_admin_user=${ADMIN_USER} mongodb_admin_pass=${ADMIN_PASS}"
 
 # Clean up playbook
 rm mongodb_status.yml

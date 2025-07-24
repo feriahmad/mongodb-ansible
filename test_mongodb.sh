@@ -24,7 +24,7 @@ fi
 echo "MongoDB is installed. Running test playbook..."
 
 # Run the test playbook
-ansible-playbook -i inventory.ini mongodb_test.yml
+ansible-playbook -i inventory.ini mongodb_test.yml --extra-vars "mongodb_admin_user=${ADMIN_USER} mongodb_admin_pass=${ADMIN_PASS}"
 
 # Check if test was successful
 if [ $? -eq 0 ]; then

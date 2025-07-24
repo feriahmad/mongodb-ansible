@@ -321,7 +321,7 @@ else
 fi
 echo
 
-ansible-playbook -i inventory.ini mongodb_monitor.yml
+ansible-playbook -i inventory.ini mongodb_monitor.yml --extra-vars "mongodb_admin_user=${ADMIN_USER} mongodb_admin_pass=${ADMIN_PASS}"
 
 # Check if monitoring was successful
 if [ $? -eq 0 ]; then

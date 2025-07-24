@@ -167,8 +167,8 @@ cat > mongodb_secure.yml << EOF
         mongosh --port {{ mongodb_port }} --eval '
           db = db.getSiblingDB("admin");
           db.createUser({
-            user: "{{ lookup('env', 'MONGODB_ADMIN_USER') }}",
-            pwd: "{{ lookup('env', 'MONGODB_ADMIN_PASS') }}",
+            user: "{{ mongodb_admin_user }}",
+            pwd: "{{ mongodb_admin_pass }}",
             roles: [
               { role: "userAdminAnyDatabase", db: "admin" },
               { role: "readWriteAnyDatabase", db: "admin" },
@@ -176,7 +176,7 @@ cat > mongodb_secure.yml << EOF
               { role: "clusterAdmin", db: "admin" }
             ]
           });
-          db.auth("{{ lookup('env', 'MONGODB_ADMIN_USER') }}", "{{ lookup('env', 'MONGODB_ADMIN_PASS') }}");
+          db.auth("{{ mongodb_admin_user }}", "{{ mongodb_admin_pass }}");
         '
       register: create_user_result
       changed_when: false
@@ -202,7 +202,7 @@ cat > mongodb_secure.yml << EOF
 
     - name: Verify MongoDB security settings
       shell: >
-        mongosh --port {{ mongodb_port }} {{ '--authenticationDatabase admin -u ' + lookup('env', 'MONGODB_ADMIN_USER') + ' -p ' + lookup('env', 'MONGODB_ADMIN_PASS') if enable_auth else '' }} --eval "db.runCommand({ connectionStatus: 1 })"
+        mongosh --port {{ mongodb_port }} {{ '--authenticationDatabase admin -u ' + mongodb_admin_user + ' -p ' + mongodb_admin_pass if enable_auth else '' }} --eval "db.runCommand({ connectionStatus: 1 })"
       register: security_status
       changed_when: false
       ignore_errors: yes
@@ -229,7 +229,7 @@ fi
 echo "- Setting bind IP to: $BIND_IP"
 echo
 
-ansible-playbook -i inventory.ini mongodb_secure.yml
+ansible-playbook -i inventory.ini mongodb_secure.yml --extra-vars "mongodb_admin_user=${ADMIN_USER} mongodb_admin_pass=${ADMIN_PASS}"
 
 # Check if configuration was successful
 if [ $? -eq 0 ]; then

@@ -104,13 +104,13 @@ cat > mongodb_restore.yml << EOF
 
     - name: Restore all databases
       shell: >
-        mongorestore --authenticationDatabase admin -u {{ lookup('env', 'MONGODB_ADMIN_USER') }} -p {{ lookup('env', 'MONGODB_ADMIN_PASS') }} --gzip {{ '--drop' if drop_existing else '' }} {{ backup_path }}
+        mongorestore --authenticationDatabase admin -u {{ mongodb_admin_user }} -p {{ mongodb_admin_pass }} --gzip {{ '--drop' if drop_existing else '' }} {{ backup_path }}
       when: specific_db == ""
       register: restore_result
 
     - name: Restore specific database
       shell: >
-        mongorestore --authenticationDatabase admin -u {{ lookup('env', 'MONGODB_ADMIN_USER') }} -p {{ lookup('env', 'MONGODB_ADMIN_PASS') }} --gzip {{ '--drop' if drop_existing else '' }} --db={{ specific_db }} {{ backup_path }}/{{ specific_db }}
+        mongorestore --authenticationDatabase admin -u {{ mongodb_admin_user }} -p {{ mongodb_admin_pass }} --gzip {{ '--drop' if drop_existing else '' }} --db={{ specific_db }} {{ backup_path }}/{{ specific_db }}
       when: specific_db != ""
       register: restore_result
 
@@ -128,7 +128,7 @@ if [ "$DROP_EXISTING" = true ]; then
     echo "Warning: Existing collections will be dropped before restore"
 fi
 
-ansible-playbook -i inventory.ini mongodb_restore.yml
+ansible-playbook -i inventory.ini mongodb_restore.yml --extra-vars "mongodb_admin_user=${ADMIN_USER} mongodb_admin_pass=${ADMIN_PASS}"
 
 # Check if restore was successful
 if [ $? -eq 0 ]; then

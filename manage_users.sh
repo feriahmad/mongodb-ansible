@@ -151,7 +151,7 @@ cat > mongodb_users.yml << EOF
   tasks:
     - name: Create MongoDB user
       shell: |
-        mongosh --authenticationDatabase admin -u {{ lookup('env', 'MONGODB_ADMIN_USER') }} -p {{ lookup('env', 'MONGODB_ADMIN_PASS') }} --eval '
+        mongosh --authenticationDatabase admin -u {{ mongodb_admin_user }} -p {{ mongodb_admin_pass }} --eval '
           db = db.getSiblingDB("{{ database }}");
           db.createUser({
             user: "{{ username }}",
@@ -169,7 +169,7 @@ cat > mongodb_users.yml << EOF
 
     - name: Delete MongoDB user
       shell: |
-        mongosh --authenticationDatabase admin -u {{ lookup('env', 'MONGODB_ADMIN_USER') }} -p {{ lookup('env', 'MONGODB_ADMIN_PASS') }} --eval '
+        mongosh --authenticationDatabase admin -u {{ mongodb_admin_user }} -p {{ mongodb_admin_pass }} --eval '
           db = db.getSiblingDB("{{ database }}");
           db.dropUser("{{ username }}");
         '
@@ -179,7 +179,7 @@ cat > mongodb_users.yml << EOF
 
     - name: List MongoDB users
       shell: |
-        mongosh --authenticationDatabase admin -u {{ lookup('env', 'MONGODB_ADMIN_USER') }} -p {{ lookup('env', 'MONGODB_ADMIN_PASS') }} --eval '
+        mongosh --authenticationDatabase admin -u {{ mongodb_admin_user }} -p {{ mongodb_admin_pass }} --eval '
           db = db.getSiblingDB("admin");
           db.system.users.find({}, {user: 1, db: 1, roles: 1, _id: 0}).pretty();
         '
@@ -214,7 +214,7 @@ elif [ "$ACTION" = "list" ]; then
 fi
 echo
 
-ansible-playbook -i inventory.ini mongodb_users.yml
+ansible-playbook -i inventory.ini mongodb_users.yml --extra-vars "mongodb_admin_user=${ADMIN_USER} mongodb_admin_pass=${ADMIN_PASS}"
 
 # Check if operation was successful
 if [ $? -eq 0 ]; then
