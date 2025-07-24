@@ -80,7 +80,7 @@ check_env_vars() {
 check_env_vars
 
 # Backup directory
-DEST=/data/backup/tmp
+DEST=/home/jds/mongodb/backup/tmp
 
 # Display usage information
 function show_usage {
