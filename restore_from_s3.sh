@@ -3,6 +3,10 @@
 # Script to restore MongoDB database from S3 backup
 # This script downloads a backup from S3, extracts it, and restores it to MongoDB
 
+# Record start time
+START_TIME=$(date +%s)
+START_TIME_HUMAN=$(date "+%Y-%m-%d %H:%M:%S")
+
 # Load environment variables from .env file
 source ./load_env.sh
 
@@ -205,10 +209,24 @@ echo "Step 4: Cleaning up..."
 /bin/rm -f $DEST/../$BACKUP_FILENAME
 /bin/rm -rf $DEST
 
+# Record end time
+END_TIME=$(date +%s)
+END_TIME_HUMAN=$(date "+%Y-%m-%d %H:%M:%S")
+
+# Calculate elapsed time
+ELAPSED_TIME=$((END_TIME - START_TIME))
+HOURS=$((ELAPSED_TIME / 3600))
+MINUTES=$(( (ELAPSED_TIME % 3600) / 60 ))
+SECONDS=$((ELAPSED_TIME % 60))
+
 # All done
 echo "====================================================="
 echo "Restore completed successfully!"
 echo "Database $DBNAME has been restored from $BACKUP_FILENAME"
+echo "====================================================="
+echo "Start time: $START_TIME_HUMAN"
+echo "End time: $END_TIME_HUMAN"
+echo "Total time: ${HOURS}h ${MINUTES}m ${SECONDS}s"
 echo "====================================================="
 
 exit 0
