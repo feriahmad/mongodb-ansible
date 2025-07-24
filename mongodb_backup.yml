@@ -1,0 +1,49 @@
+---
+- name: Backup MongoDB databases
+  hosts: mongodb
+  become: yes
+  vars:
+    backup_path: "/tmp/mongodb_backups/20250724_142305"
+    specific_db: "all"
+  tasks:
+    - name: Create backup directory
+      file:
+        path: "{{ backup_path }}"
+        state: directory
+        mode: '0755'
+
+    - name: Get list of databases
+      shell: mongosh --quiet --eval "db.adminCommand('listDatabases').databases.map(function(d) { return d.name })"
+      register: db_list
+      changed_when: false
+      when: specific_db == "all"
+
+    - name: Parse database list
+      set_fact:
+        databases: "{{ db_list.stdout | from_json }}"
+      when: specific_db == "all"
+
+    - name: Set single database
+      set_fact:
+        databases: ["{{ specific_db }}"]
+      when: specific_db != "all"
+
+    - name: Backup databases
+      shell: mongodump --db={{ item }} --out={{ backup_path }} --gzip
+      loop: "{{ databases }}"
+      when: item != "admin" and item != "config" and item != "local"
+      register: backup_result
+
+    - name: Display backup results
+      debug:
+        msg: "Backed up database: {{ item.item }}"
+      loop: "{{ backup_result.results }}"
+      when: item.rc == 0
+
+    - name: Create backup info file
+      copy:
+        dest: "{{ backup_path }}/backup_info.txt"
+        content: |
+          Backup created: Thu Jul 24 14:23:05 WIB 2025
+          MongoDB version: 
+          Databases: {{ databases | join(', ') }}
