@@ -77,7 +77,7 @@ cat > mongodb_backup.yml << EOF
         mode: '0755'
 
     - name: Get list of databases
-      shell: mongosh --quiet --eval "db.adminCommand('listDatabases').databases.map(function(d) { return d.name })"
+      shell: mongosh --authenticationDatabase admin -u {{ lookup('env', 'MONGODB_ADMIN_USER') }} -p {{ lookup('env', 'MONGODB_ADMIN_PASS') }} --quiet --eval "db.adminCommand('listDatabases').databases.map(function(d) { return d.name })"
       register: db_list
       changed_when: false
       when: specific_db == "all"
@@ -93,7 +93,7 @@ cat > mongodb_backup.yml << EOF
       when: specific_db != "all"
 
     - name: Backup databases
-      shell: mongodump --db={{ item }} --out={{ backup_path }} --gzip
+      shell: mongodump --authenticationDatabase admin -u {{ lookup('env', 'MONGODB_ADMIN_USER') }} -p {{ lookup('env', 'MONGODB_ADMIN_PASS') }} --db={{ item }} --out={{ backup_path }} --gzip
       loop: "{{ databases }}"
       when: item != "admin" and item != "config" and item != "local"
       register: backup_result

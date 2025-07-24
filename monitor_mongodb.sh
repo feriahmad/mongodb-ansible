@@ -110,8 +110,6 @@ cat > mongodb_monitor.yml << EOF
   vars:
     interval: ${INTERVAL}
     count: ${COUNT}
-    admin_user: "${ADMIN_USER}"
-    admin_pass: "${ADMIN_PASS}"
     output_format: "${OUTPUT_FORMAT}"
     output_file: "${OUTPUT_FILE}"
     auth_string: "${AUTH_STRING}"

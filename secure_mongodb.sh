@@ -102,8 +102,6 @@ cat > mongodb_secure.yml << EOF
     - vars/mongodb_vars.yml
   vars:
     enable_auth: ${ENABLE_AUTH}
-    admin_user: "${ADMIN_USER}"
-    admin_pass: "${ADMIN_PASS}"
     enable_tls: ${ENABLE_TLS}
     bind_ip: "${BIND_IP}"
   tasks:
@@ -169,8 +167,8 @@ cat > mongodb_secure.yml << EOF
         mongosh --port {{ mongodb_port }} --eval '
           db = db.getSiblingDB("admin");
           db.createUser({
-            user: "{{ admin_user }}",
-            pwd: "{{ admin_pass }}",
+            user: "{{ lookup('env', 'MONGODB_ADMIN_USER') }}",
+            pwd: "{{ lookup('env', 'MONGODB_ADMIN_PASS') }}",
             roles: [
               { role: "userAdminAnyDatabase", db: "admin" },
               { role: "readWriteAnyDatabase", db: "admin" },
@@ -178,7 +176,7 @@ cat > mongodb_secure.yml << EOF
               { role: "clusterAdmin", db: "admin" }
             ]
           });
-          db.auth("{{ admin_user }}", "{{ admin_pass }}");
+          db.auth("{{ lookup('env', 'MONGODB_ADMIN_USER') }}", "{{ lookup('env', 'MONGODB_ADMIN_PASS') }}");
         '
       register: create_user_result
       changed_when: false
@@ -204,7 +202,7 @@ cat > mongodb_secure.yml << EOF
 
     - name: Verify MongoDB security settings
       shell: >
-        mongosh --port {{ mongodb_port }} {{ '--authenticationDatabase admin -u ' + admin_user + ' -p ' + admin_pass if enable_auth else '' }} --eval "db.runCommand({ connectionStatus: 1 })"
+        mongosh --port {{ mongodb_port }} {{ '--authenticationDatabase admin -u ' + lookup('env', 'MONGODB_ADMIN_USER') + ' -p ' + lookup('env', 'MONGODB_ADMIN_PASS') if enable_auth else '' }} --eval "db.runCommand({ connectionStatus: 1 })"
       register: security_status
       changed_when: false
       ignore_errors: yes

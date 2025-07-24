@@ -24,7 +24,7 @@
         var: mongodb_version.stdout_lines
         
     - name: Check MongoDB connection
-      command: mongosh --eval "db.adminCommand('ping')"
+      command: mongosh --authenticationDatabase admin -u {{ lookup('env', 'MONGODB_ADMIN_USER') }} -p {{ lookup('env', 'MONGODB_ADMIN_PASS') }} --eval "db.adminCommand('ping')"
       register: mongodb_ping
       changed_when: false
       
@@ -45,7 +45,7 @@
             mode: '0644'
             
         - name: Run test script
-          command: mongosh --file /tmp/mongodb_test.js
+          command: mongosh --authenticationDatabase admin -u {{ lookup('env', 'MONGODB_ADMIN_USER') }} -p {{ lookup('env', 'MONGODB_ADMIN_PASS') }} --file /tmp/mongodb_test.js
           register: test_result
           changed_when: false
           

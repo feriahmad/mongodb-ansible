@@ -104,13 +104,13 @@ cat > mongodb_restore.yml << EOF
 
     - name: Restore all databases
       shell: >
-        mongorestore --gzip {{ '--drop' if drop_existing else '' }} {{ backup_path }}
+        mongorestore --authenticationDatabase admin -u {{ lookup('env', 'MONGODB_ADMIN_USER') }} -p {{ lookup('env', 'MONGODB_ADMIN_PASS') }} --gzip {{ '--drop' if drop_existing else '' }} {{ backup_path }}
       when: specific_db == ""
       register: restore_result
 
     - name: Restore specific database
       shell: >
-        mongorestore --gzip {{ '--drop' if drop_existing else '' }} --db={{ specific_db }} {{ backup_path }}/{{ specific_db }}
+        mongorestore --authenticationDatabase admin -u {{ lookup('env', 'MONGODB_ADMIN_USER') }} -p {{ lookup('env', 'MONGODB_ADMIN_PASS') }} --gzip {{ '--drop' if drop_existing else '' }} --db={{ specific_db }} {{ backup_path }}/{{ specific_db }}
       when: specific_db != ""
       register: restore_result
 

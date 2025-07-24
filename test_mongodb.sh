@@ -11,6 +11,9 @@ echo "====================================================="
 echo "MongoDB 5.0.3 Installation Test Script for Ubuntu 24.04 (using Ubuntu 22.04 repository)"
 echo "====================================================="
 
+# Load environment variables from .env file
+source ./load_env.sh
+
 # Check if MongoDB is installed
 if ! command -v mongod &> /dev/null; then
     echo "MongoDB does not appear to be installed. Please run the installation script first."

@@ -11,8 +11,15 @@ echo "====================================================="
 echo "MongoDB Status Check"
 echo "====================================================="
 
+# Load environment variables from .env file
+source ./load_env.sh
+
+# Set admin credentials
+ADMIN_USER="${MONGODB_ADMIN_USER:-}"
+ADMIN_PASS="${MONGODB_ADMIN_PASS:-}"
+
 # Create Ansible playbook for status check
-cat > mongodb_status.yml << 'EOF'
+cat > mongodb_status.yml << EOF
 ---
 - name: Check MongoDB Status
   hosts: mongodb
@@ -50,21 +57,21 @@ cat > mongodb_status.yml << 'EOF'
       when: mongodb_is_installed
 
     - name: Get MongoDB server status
-      shell: mongosh --quiet --eval "db.serverStatus()"
+      shell: mongosh --authenticationDatabase admin -u {{ lookup('env', 'MONGODB_ADMIN_USER') }} -p {{ lookup('env', 'MONGODB_ADMIN_PASS') }} --quiet --eval "db.serverStatus()"
       register: server_status
       changed_when: false
       ignore_errors: yes
       when: mongodb_is_installed and mongodb_is_running
 
     - name: Get MongoDB database list
-      shell: mongosh --quiet --eval "db.adminCommand('listDatabases')"
+      shell: mongosh --authenticationDatabase admin -u {{ lookup('env', 'MONGODB_ADMIN_USER') }} -p {{ lookup('env', 'MONGODB_ADMIN_PASS') }} --quiet --eval "db.adminCommand('listDatabases')"
       register: db_list
       changed_when: false
       ignore_errors: yes
       when: mongodb_is_installed and mongodb_is_running
 
     - name: Get MongoDB connection info
-      shell: mongosh --quiet --eval "db.runCommand({connectionStatus: 1})"
+      shell: mongosh --authenticationDatabase admin -u {{ lookup('env', 'MONGODB_ADMIN_USER') }} -p {{ lookup('env', 'MONGODB_ADMIN_PASS') }} --quiet --eval "db.runCommand({connectionStatus: 1})"
       register: connection_info
       changed_when: false
       ignore_errors: yes

@@ -148,12 +148,10 @@ cat > mongodb_users.yml << EOF
     password: "${PASSWORD}"
     database: "${DATABASE}"
     roles: "${ROLES}"
-    admin_user: "${ADMIN_USER}"
-    admin_pass: "${ADMIN_PASS}"
   tasks:
     - name: Create MongoDB user
       shell: |
-        mongosh --authenticationDatabase admin -u {{ admin_user }} -p {{ admin_pass }} --eval '
+        mongosh --authenticationDatabase admin -u {{ lookup('env', 'MONGODB_ADMIN_USER') }} -p {{ lookup('env', 'MONGODB_ADMIN_PASS') }} --eval '
           db = db.getSiblingDB("{{ database }}");
           db.createUser({
             user: "{{ username }}",
@@ -171,7 +169,7 @@ cat > mongodb_users.yml << EOF
 
     - name: Delete MongoDB user
       shell: |
-        mongosh --authenticationDatabase admin -u {{ admin_user }} -p {{ admin_pass }} --eval '
+        mongosh --authenticationDatabase admin -u {{ lookup('env', 'MONGODB_ADMIN_USER') }} -p {{ lookup('env', 'MONGODB_ADMIN_PASS') }} --eval '
           db = db.getSiblingDB("{{ database }}");
           db.dropUser("{{ username }}");
         '
@@ -181,7 +179,7 @@ cat > mongodb_users.yml << EOF
 
     - name: List MongoDB users
       shell: |
-        mongosh --authenticationDatabase admin -u {{ admin_user }} -p {{ admin_pass }} --eval '
+        mongosh --authenticationDatabase admin -u {{ lookup('env', 'MONGODB_ADMIN_USER') }} -p {{ lookup('env', 'MONGODB_ADMIN_PASS') }} --eval '
           db = db.getSiblingDB("admin");
           db.system.users.find({}, {user: 1, db: 1, roles: 1, _id: 0}).pretty();
         '
