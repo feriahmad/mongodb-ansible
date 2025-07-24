@@ -6,9 +6,8 @@
 # Where and how to store data.
 storage:
   dbPath: {{ mongodb_data_dir }}
-  # In MongoDB 8.0, journaling is always enabled and cannot be disabled
-  # journal:
-  #   enabled: true
+  journal:
+    enabled: true
 
 # where to write logging data.
 systemLog:

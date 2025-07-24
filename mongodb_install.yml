@@ -1,5 +1,5 @@
 ---
-- name: Install MongoDB 8.0.9 on Ubuntu 20.04
+- name: Install MongoDB 5.0.13 on Ubuntu 20.04
   hosts: mongodb
   become: yes
   vars_files:

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script to uninstall MongoDB 8.0.9 using Ansible
+# Script to uninstall MongoDB 5.0.13 using Ansible
 # Author: Cline
 # Date: 2025-05-21
 
@@ -8,11 +8,11 @@ set -e
 
 # Display banner
 echo "====================================================="
-echo "MongoDB 8.0.9 Uninstallation Script for Ubuntu 20.04"
+echo "MongoDB 5.0.13 Uninstallation Script for Ubuntu 20.04"
 echo "====================================================="
 
 # Confirm uninstallation
-echo "This script will completely remove MongoDB 8.0.9 from your system."
+echo "This script will completely remove MongoDB 5.0.13 from your system."
 echo "All data will be lost. Make sure you have a backup if needed."
 read -p "Are you sure you want to continue? (y/n): " -n 1 -r
 echo
@@ -24,7 +24,7 @@ fi
 # Create uninstall playbook
 cat > mongodb_uninstall.yml << 'EOF'
 ---
-- name: Uninstall MongoDB 8.0.9
+- name: Uninstall MongoDB 5.0.13
   hosts: mongodb
   become: yes
   vars_files:
@@ -86,7 +86,7 @@ ansible-playbook -i inventory.ini mongodb_uninstall.yml
 # Check if uninstallation was successful
 if [ $? -eq 0 ]; then
     echo "====================================================="
-    echo "MongoDB 8.0.9 uninstallation completed successfully!"
+    echo "MongoDB 5.0.13 uninstallation completed successfully!"
     echo "====================================================="
     
     # Clean up uninstall playbook

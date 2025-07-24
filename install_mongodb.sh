@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script to install MongoDB 8.0.9 using Ansible
+# Script to install MongoDB 5.0.13 using Ansible
 # Author: Cline
 # Date: 2025-05-21
 
@@ -8,7 +8,7 @@ set -e
 
 # Display banner
 echo "====================================================="
-echo "MongoDB 8.0.9 Installation Script for Ubuntu 20.04"
+echo "MongoDB 5.0.13 Installation Script for Ubuntu 20.04"
 echo "====================================================="
 
 # Check if Ansible is installed
@@ -28,7 +28,7 @@ ansible-playbook -i inventory.ini mongodb_install.yml
 # Check if installation was successful
 if [ $? -eq 0 ]; then
     echo "====================================================="
-    echo "MongoDB 8.0.9 installation completed successfully!"
+    echo "MongoDB 5.0.13 installation completed successfully!"
     echo "====================================================="
     echo "To verify the installation, run:"
     echo "ansible-playbook -i inventory.ini mongodb_test.yml"
