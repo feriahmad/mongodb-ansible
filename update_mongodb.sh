@@ -8,7 +8,7 @@ set -e
 
 # Display banner
 echo "====================================================="
-echo "MongoDB Update Script for Ubuntu 20.04"
+echo "MongoDB Update Script for Ubuntu 24.04 (using Ubuntu 22.04 repository)"
 echo "====================================================="
 
 # Get current version
@@ -16,7 +16,7 @@ current_version=$(grep "mongodb_version:" vars/mongodb_vars.yml | cut -d'"' -f2)
 echo "Current MongoDB version: $current_version"
 
 # Ask for new version
-read -p "Enter the new MongoDB version (e.g., 8.0.10): " new_version
+read -p "Enter the new MongoDB version (e.g., 5.0.4): " new_version
 
 # Validate input
 if [[ ! $new_version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -35,7 +35,7 @@ sed -i "s/mongodb_version: \"$current_version\"/mongodb_version: \"$new_version\
 current_major=$(echo $current_version | cut -d'.' -f1-2)
 if [ "$current_major" != "$major_version" ]; then
     echo "Major version change detected. Updating repository..."
-    sed -i "s/focal\/mongodb-org\/$current_major/focal\/mongodb-org\/$major_version/" vars/mongodb_vars.yml
+    sed -i "s/jammy\/mongodb-org\/$current_major/jammy\/mongodb-org\/$major_version/" vars/mongodb_vars.yml
     sed -i "s/server-$current_major.asc/server-$major_version.asc/" vars/mongodb_vars.yml
     sed -i "s/mongodb-org-$current_major/mongodb-org-$major_version/" vars/mongodb_vars.yml
 fi
@@ -62,7 +62,7 @@ else
     sed -i "s/mongodb_version: \"$new_version\"/mongodb_version: \"$current_version\"/" vars/mongodb_vars.yml
     
     if [ "$current_major" != "$major_version" ]; then
-        sed -i "s/focal\/mongodb-org\/$major_version/focal\/mongodb-org\/$current_major/" vars/mongodb_vars.yml
+        sed -i "s/jammy\/mongodb-org\/$major_version/jammy\/mongodb-org\/$current_major/" vars/mongodb_vars.yml
         sed -i "s/server-$major_version.asc/server-$current_major.asc/" vars/mongodb_vars.yml
         sed -i "s/mongodb-org-$major_version/mongodb-org-$current_major/" vars/mongodb_vars.yml
     fi

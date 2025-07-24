@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script to test MongoDB 5.0.13 installation using Ansible
+# Script to test MongoDB 5.0.3 installation using Ansible
 # Author: Cline
 # Date: 2025-05-21
 
@@ -8,7 +8,7 @@ set -e
 
 # Display banner
 echo "====================================================="
-echo "MongoDB 5.0.13 Installation Test Script for Ubuntu 24.04 (using Ubuntu 22.04 repository)"
+echo "MongoDB 5.0.3 Installation Test Script for Ubuntu 24.04 (using Ubuntu 22.04 repository)"
 echo "====================================================="
 
 # Check if MongoDB is installed
@@ -26,7 +26,7 @@ ansible-playbook -i inventory.ini mongodb_test.yml
 # Check if test was successful
 if [ $? -eq 0 ]; then
     echo "====================================================="
-    echo "MongoDB 5.0.13 test completed successfully!"
+    echo "MongoDB 5.0.3 test completed successfully!"
     echo "====================================================="
     echo "Your MongoDB installation is working correctly."
 else

@@ -1,5 +1,5 @@
 ---
-- name: Install MongoDB 5.0.13 on Ubuntu 24.04 (using Ubuntu 22.04 repository)
+- name: Install MongoDB 5.0.3 on Ubuntu 24.04 (using Ubuntu 22.04 repository)
   hosts: mongodb
   become: yes
   vars_files:
@@ -19,6 +19,23 @@
     - name: Update apt cache
       apt:
         update_cache: yes
+
+    - name: Install libssl1.1 dependency (required for MongoDB 5.0.x)
+      block:
+        - name: Download libssl1.1 package from Ubuntu 22.04 repository
+          get_url:
+            url: http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.20_amd64.deb
+            dest: /tmp/libssl1.1.deb
+            mode: '0644'
+          
+        - name: Install libssl1.1 package
+          apt:
+            deb: /tmp/libssl1.1.deb
+          
+        - name: Clean up downloaded package
+          file:
+            path: /tmp/libssl1.1.deb
+            state: absent
 
     - name: Install MongoDB packages
       apt:
