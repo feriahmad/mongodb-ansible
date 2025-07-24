@@ -60,65 +60,54 @@ done
 mkdir -p "$BACKUP_PATH"
 echo "Backup directory: $BACKUP_PATH"
 
-# Create Ansible playbook for backup
-cat > mongodb_backup.yml << EOF
----
-- name: Backup MongoDB databases
-  hosts: mongodb
-  become: yes
-  vars:
-    backup_path: "${BACKUP_PATH}"
-    specific_db: "${SPECIFIC_DB:-all}"
-  tasks:
-    - name: Create backup directory
-      file:
-        path: "{{ backup_path }}"
-        state: directory
-        mode: '0755'
 
-    - name: Get list of databases
-      shell: mongosh --authenticationDatabase admin -u {{ mongodb_admin_user }} -p {{ mongodb_admin_pass }} --quiet --eval "db.adminCommand('listDatabases').databases.map(function(d) { return d.name })"
-      register: db_list
-      changed_when: false
-      when: specific_db == "all"
+# Run the backup directly using MongoDB commands
+echo "Starting MongoDB backup..."
 
-    - name: Parse database list
-      set_fact:
-        databases: "{{ db_list.stdout | from_json }}"
-      when: specific_db == "all"
+# Get list of databases
+if [ "${SPECIFIC_DB:-all}" == "all" ]; then
+    echo "Getting list of databases..."
+    DATABASES=$(mongosh --authenticationDatabase admin -u "${ADMIN_USER}" -p "${ADMIN_PASS}" --quiet --eval "JSON.stringify(db.adminCommand('listDatabases').databases.map(function(d) { return d.name }))" | grep -v "^Error")
+    
+    # Check if the command was successful
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to get list of databases"
+        rm mongodb_backup.yml
+        exit 1
+    fi
+    
+    # Parse the JSON string
+    DATABASES=$(echo $DATABASES | sed 's/\[\|\]//g' | sed 's/"//g' | sed 's/,/ /g')
+else
+    DATABASES="${SPECIFIC_DB}"
+fi
 
-    - name: Set single database
-      set_fact:
-        databases: ["{{ specific_db }}"]
-      when: specific_db != "all"
+# Backup each database
+for DB in $DATABASES; do
+    # Skip system databases
+    if [ "$DB" != "admin" ] && [ "$DB" != "config" ] && [ "$DB" != "local" ]; then
+        echo "Backing up database: $DB"
+        mongodump --authenticationDatabase admin -u "${ADMIN_USER}" -p "${ADMIN_PASS}" --db=$DB --out="${BACKUP_PATH}" --gzip
+        
+        # Check if the backup was successful
+        if [ $? -eq 0 ]; then
+            echo "Successfully backed up database: $DB"
+        else
+            echo "Error: Failed to backup database: $DB"
+        fi
+    fi
+done
 
-    - name: Backup databases
-      shell: mongodump --authenticationDatabase admin -u {{ mongodb_admin_user }} -p {{ mongodb_admin_pass }} --db={{ item }} --out={{ backup_path }} --gzip
-      loop: "{{ databases }}"
-      when: item != "admin" and item != "config" and item != "local"
-      register: backup_result
-
-    - name: Display backup results
-      debug:
-        msg: "Backed up database: {{ item.item }}"
-      loop: "{{ backup_result.results }}"
-      when: item.rc == 0
-
-    - name: Create backup info file
-      copy:
-        dest: "{{ backup_path }}/backup_info.txt"
-        content: |
-          Backup created: $(date)
-          MongoDB version: $(mongod --version | head -n 1)
-          Databases: {{ databases | join(', ') }}
+# Create backup info file
+echo "Creating backup info file..."
+cat > "${BACKUP_PATH}/backup_info.txt" << EOF
+Backup created: $(date)
+MongoDB version: $(mongod --version 2>/dev/null || echo "Unknown")
+Databases: $(echo $DATABASES | tr ' ' ', ')
 EOF
 
-# Run the backup playbook
-echo "Starting MongoDB backup..."
-ansible-playbook -i inventory.ini mongodb_backup.yml --extra-vars "mongodb_admin_user=${ADMIN_USER} mongodb_admin_pass=${ADMIN_PASS}"
-
-# Check if backup was successful
-if [ $? -eq 0 ]; then
+# Check if at least one database was backed up
+if [ -d "${BACKUP_PATH}" ] && [ "$(ls -A ${BACKUP_PATH})" ]; then
     echo "====================================================="
     echo "MongoDB backup completed successfully!"
     echo "====================================================="
@@ -127,13 +116,10 @@ if [ $? -eq 0 ]; then
     echo "To restore from this backup, use:"
     echo "mongorestore --gzip $BACKUP_PATH"
     
-    # Clean up playbook
-    rm mongodb_backup.yml
 else
     echo "====================================================="
     echo "MongoDB backup failed. Please check the logs above."
     echo "====================================================="
-    rm mongodb_backup.yml
     exit 1
 fi
 

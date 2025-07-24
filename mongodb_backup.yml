@@ -3,7 +3,7 @@
   hosts: mongodb
   become: yes
   vars:
-    backup_path: "/tmp/mongodb_backups/20250724_150644"
+    backup_path: "/tmp/mongodb_backups/20250724_151111"
     specific_db: "all"
   tasks:
     - name: Create backup directory
@@ -13,7 +13,7 @@
         mode: '0755'
 
     - name: Get list of databases
-      shell: mongosh --authenticationDatabase admin -u {{ mongodb_admin_user }} -p {{ mongodb_admin_pass }} --quiet --eval "db.adminCommand('listDatabases').databases.map(function(d) { return d.name })"
+      shell: mongosh --authenticationDatabase admin -u {{ mongodb_admin_user }} -p {{ mongodb_admin_pass }} --quiet --eval "JSON.stringify(db.adminCommand('listDatabases').databases.map(function(d) { return d.name }))"
       register: db_list
       changed_when: false
       when: specific_db == "all"
@@ -44,6 +44,6 @@
       copy:
         dest: "{{ backup_path }}/backup_info.txt"
         content: |
-          Backup created: Thu Jul 24 15:06:44 WIB 2025
+          Backup created: Thu Jul 24 15:11:11 WIB 2025
           MongoDB version: 
           Databases: {{ databases | join(', ') }}
