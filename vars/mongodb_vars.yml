@@ -1,7 +1,7 @@
 ---
 # MongoDB version and package information
 mongodb_version: "5.0.13"
-mongodb_repo: "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/5.0 multiverse"
+mongodb_repo: "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/5.0 multiverse"
 mongodb_gpg_key: "https://pgp.mongodb.com/server-5.0.asc"
 mongodb_repo_file: "mongodb-org-5.0"
 

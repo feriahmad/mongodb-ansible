@@ -1,6 +1,6 @@
 # MongoDB 5.0.13 Installation Ansible Playbook
 
-This Ansible playbook automates the installation of MongoDB 5.0.13 on Ubuntu 24.04.
+This Ansible playbook automates the installation of MongoDB 5.0.13 on Ubuntu 24.04, using the Ubuntu 22.04 (Jammy Jellyfish) repository for compatibility.
 
 ## Prerequisites
 

@@ -1,5 +1,5 @@
 ---
-- name: Install MongoDB 5.0.13 on Ubuntu 24.04
+- name: Install MongoDB 5.0.13 on Ubuntu 24.04 (using Ubuntu 22.04 repository)
   hosts: mongodb
   become: yes
   vars_files:

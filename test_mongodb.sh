@@ -8,7 +8,7 @@ set -e
 
 # Display banner
 echo "====================================================="
-echo "MongoDB 5.0.13 Installation Test Script for Ubuntu 24.04"
+echo "MongoDB 5.0.13 Installation Test Script for Ubuntu 24.04 (using Ubuntu 22.04 repository)"
 echo "====================================================="
 
 # Check if MongoDB is installed
